@@ -34,28 +34,28 @@ Then whenever you instantiate a new `TranslatorMissingIn::Translator`, you don't
 * `cd` into the repo and open your interactive Ruby terminal.
 * Require the `translator.rb` file (or load it if you're planning to make some changes of your own).
 ```rb
-require_relative 'translator'
+[1] pry(main)> require_relative 'translator'
 ```
 or
 ```rb
-load 'translator.rb'
+[2] pry(main)> load 'translator.rb'
 ```
 * Instantiate a new translator.
 ```rb
 # don't forget the API key keyword arg if you didn't already set it as an env var
-translator = TranslatorMissingIn::Translator.new
+[3] pry(main)> translator = TranslatorMissingIn::Translator.new
 ```
 By default, English is the base language (the language that the names of other languages are given in, and the expected input and output of language chains). This can be changed by instantiating the translator using the `base_lang_code` keyword arg and [an ISO-639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 ### Examples
-* For a **simple translation**, the `TranslatorMissingIn::Translator#translate` method takes a required `text` argument, and `to` and `from` keyword arguments. `to` and `from` both accept ISO-639-1 language codes or `Google::Cloud::Translate::Language` objects, and if either  is omitted, the base language is used by default. So only one is required, but both may be specified.
+* For a **simple translation**, the `TranslatorMissingIn::Translator#translate` method takes a required `text` argument, and `to` and `from` keyword arguments. `to` and `from` both accept ISO-639-1 language codes or `Google::Cloud::Translate::Language` objects, and if either `to` or `from` is omitted, the base language is used by default. So only one is required, but both may be specified.
 ```rb
-translator.translate('Lost in translation', to: 'es')
+[4] pry(main)> translator.translate('Lost in translation', to: 'es')
 => "Perdido en la traducción"
 ```
-* For a **translation chain**, the `TranslatorMissingIn::Translator#translation_chain` method takes a required `text` argument (string), an optional `iterations` keyword arg (integer) that specifies the number of languages to cycle through (default: 20), and an optional `alternate_base` keyword arg (boolean) that indicates whether to translate back to the base language between each language pair (default: false).  
-I.e. `alternate_base: false` could result in `English -> Spanish -> Zulu -> Armenian -> ... -> English`, whereas `alternate_base: true` would result in `English -> Spanish -> English -> Zulu -> English -> Armenian -> English -> ... -> English`. This is mostly for testing purposes and for seeing which languages introduce problems or errors in the chain.  
+* For a **translation chain**, the `TranslatorMissingIn::Translator#translation_chain` method takes a required `text` argument (string), an optional `iterations` keyword arg (integer) that specifies the number of languages to cycle through (default: 10), and an optional `alternate_base` keyword arg (boolean) that indicates whether to translate back to the base language between each language pair (default: false).  
+I.e. `alternate_base: false` could result in `English -> Spanish -> Zulu -> Armenian -> ... -> English`, whereas `alternate_base: true` would result in `English -> Spanish -> English -> Zulu -> English -> Armenian -> English -> ... -> English`. This is mostly for testing purposes and for seeing which languages introduce problems or errors into the chain.  
 ```rb
-pry(main)> translator.translation_chain 'this is a test', iterations: 5, alternate_base: true
+[5] pry(main)> translator.translation_chain 'this is a test', iterations: 5, alternate_base: true
 Dutch
 	This is a test
 Bulgarian
@@ -80,9 +80,22 @@ Malay
    ["Malay", "di sini ujian"],
    ["English", "here exam"]]}
 ```
-* You can get a list of all the available languages and their codes
+* You can get a list of all the available languages and their codes as an array of `Google::Cloud::Translate::Language` objects.
 ```rb
-translator.languages
+[6] pry(main)> translator.languages
+=> [#<Google::Cloud::Translate::Language:0x007fe7ad1ce9a8 @code="af", @name="Afrikaans">,
+ #<Google::Cloud::Translate::Language:0x007fe7ad1ce980 @code="sq", @name="Albanian">,
+ #<Google::Cloud::Translate::Language:0x007fe7ad1ce958 @code="am", @name="Amharic">,
+ #<Google::Cloud::Translate::Language:0x007fe7ad1ce908 @code="ar", @name="Arabic">,
+ #<Google::Cloud::Translate::Language:0x007fe7ad1ce8e0 @code="hy", @name="Armenian">,
+ ...]
+```
+* You can also get the `Google::Cloud::Translate::Language` object for a specific language if you know it's name or ISO-693-1 code.
+```rb
+[7] pry(main)> translator.language('Albanian')
+=> #<Google::Cloud::Translate::Language:0x007fde00fbd278 @code="sq", @name="Albanian">
+[8] pry(main)> translator.language('sq')
+=> #<Google::Cloud::Translate::Language:0x007fde00fbd278 @code="sq", @name="Albanian">
 ```
 
 ## Fun Facts

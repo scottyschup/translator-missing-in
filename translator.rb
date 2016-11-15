@@ -17,8 +17,14 @@ module TranslatorInMissing
       @languages ||= translator.languages(names_language)
     end
 
-    def language(language_code)
-      languages.find { |language| language.code == language_code }
+    def language(code_or_name)
+      search_type = code_or_name.length > 3 ? 'name' : 'code'
+      case search_type
+      when 'name'
+        languages.find { |language| language.name == code_or_name }
+      when 'code'
+        languages.find { |language| language.code == code_or_name }
+      end
     end
 
     def reset_base_language(language)
@@ -33,14 +39,14 @@ module TranslatorInMissing
     end
 
     def translation_chain(text, iterations: 10, alternate_base: false)
-      # chain_languages = languages # use this instead of the next line for deterministic experimentation
-      chain_languages = languages.delete_if do |language|
+      # chain_jlanguages = languages # use this instead of the next line for deterministic experimentation
+      chain_jlanguages = languages.delete_if do |language|
         language.code == base_language.code
       end.sample(iterations)
       path = [[base_language.name, text]]
 
       current = base_language
-      chain_languages.each do |language|
+      chain_jlanguages.each do |language|
         next if language.code == base_language.code
         if alternate_base && current.code != base_language.code
           text = translate(text, from: current)
