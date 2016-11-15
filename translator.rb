@@ -25,10 +25,11 @@ module TranslatorInMissing
       from = from.code if from.class == Google::Cloud::Translate::Language
       to = to.code if to.class == Google::Cloud::Translate::Language
       text = translator.translate(text, from: from, to: to).text
-      text.gsub(/&#39;|ʻ/, '\'') #
+      text.gsub(/&#39;|ʻ/, '\'') # Addresses common encoding error introduced
+      # by languages with apostrophe-like characters used for glottal stops
     end
 
-    def translation_chain(text, iterations: 10, alternate_base: true)
+    def translation_chain(text, iterations: 10, alternate_base: false)
       # langs = languages.delete_if { |l| l.code == 'en' }.sample(iterations)
       langs = languages # use this for deterministic experimentation
       path = [[base_lang.name, text]]
