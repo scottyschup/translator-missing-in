@@ -4,55 +4,68 @@ module TranslatorInMissing
   # TranslatorInMissing::Translator wraps parts of Google::Cloud::Translate
   # and adds some methods for fun with machine translation
   class Translator
-    attr_accessor :base_lang
+    attr_accessor :base_language
     attr_reader :translator
 
-    def initialize(base_lang_code: 'en', api_key: ENV['GTRANS_API_KEY'])
+    def initialize(base_language_code: 'en', api_key: ENV['GTRANS_API_KEY'])
       @translator = Google::Cloud::Translate.new(key: api_key)
-      languages(names_lang: base_lang_code)
-      @base_lang = language(base_lang_code)
+      languages(names_language: base_language_code)
+      @base_language = language(base_language_code)
     end
 
-    def languages(names_lang: 'en')
-      @languages ||= translator.languages(names_lang)
+    def languages(names_language: 'en')
+      @languages ||= translator.languages(names_language)
     end
 
-    def language(lang_code)
-      languages.find { |lang| lang.code == lang_code }
+    def language(language_code)
+      languages.find { |language| language.code == language_code }
     end
 
-    def translate(text, from: base_lang, to: base_lang)
-      from = from.code if from.class == Google::Cloud::Translate::Language
-      to = to.code if to.class == Google::Cloud::Translate::Language
+    def reset_base_language(language)
+
+    end
+
+    def translate(text, from: base_language, to: base_language)
+      to, from = language_codes_for(to, from)
       text = translator.translate(text, from: from, to: to).text
       text.gsub(/&#39;|ʻ/, '\'') # Addresses common encoding error introduced
       # by languages with apostrophe-like characters used for glottal stops
     end
 
     def translation_chain(text, iterations: 10, alternate_base: false)
-      # langs = languages.delete_if { |l| l.code == 'en' }.sample(iterations)
-      langs = languages # use this for deterministic experimentation
-      path = [[base_lang.name, text]]
+      # chain_languages = languages # use this instead of the next line for deterministic experimentation
+      chain_languages = languages.delete_if do |language|
+        language.code == base_language.code
+      end.sample(iterations)
+      path = [[base_language.name, text]]
 
-      current = base_lang
-      langs.each do |lang|
-        next if lang.code == base_lang.code
-        if alternate_base && current.code != base_lang.code
+      current = base_language
+      chain_languages.each do |language|
+        next if language.code == base_language.code
+        if alternate_base && current.code != base_language.code
           text = translate(text, from: current)
-          current = base_lang
-          path << [base_lang.name, text]
+          current = base_language
+          path << [base_language.name, text]
           puts "\t#{text}"
         end
-        text = translate(text, to: lang.code, from: current)
-        current = lang
-        path << [lang.name, text]
-        puts lang.name
+        text = translate(text, to: language.code, from: current)
+        current = language
+        path << [language.name, text]
+        puts language.name
       end
       text = translate(text, from: current.code)
       puts "\t#{text}"
-      path << [base_lang.name, text]
+      path << [base_language.name, text]
 
       { text: text, path: path }
+    end
+
+    private
+
+    def language_codes_for(*languages_arr)
+      languages_arr.map do |lang|
+        lang.class == Google::Cloud::Translate::Language ? lang.code : lang
+      end
     end
   end
 end
