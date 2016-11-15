@@ -35,7 +35,9 @@ Then whenever you instantiate a new `TranslatorMissingIn::Translator`, you don't
 * Require the `translator.rb` file (or load it if you're planning to make some changes of your own).
 ```rb
 require_relative 'translator'
+```
 or
+```rb
 load 'translator.rb'
 ```
 * Instantiate a new translator.
@@ -43,7 +45,7 @@ load 'translator.rb'
 # don't forget the API key keyword arg if you didn't already set it as an env var
 translator = TranslatorMissingIn::Translator.new
 ```
-By default, English is the base language (the language that the names of other languages are given in, and the expected input and output of language chains). This can be changed with the `base_lang_code` keyword and [an ISO-639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+By default, English is the base language (the language that the names of other languages are given in, and the expected input and output of language chains). This can be changed by instantiating the translator using the `base_lang_code` keyword arg and [an ISO-639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 ### Examples
 * For a **simple translation**, the `TranslatorMissingIn::Translator#translate` method takes a required `text` argument, and `to` and `from` keyword arguments. `to` and `from` both accept ISO-639-1 language codes or `Google::Cloud::Translate::Language` objects, and if either  is omitted, the base language is used by default. So only one is required, but both may be specified.
 ```rb
