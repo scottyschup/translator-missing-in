@@ -28,7 +28,7 @@ module TranslatorInMissing
     end
 
     def reset_base_language(language)
-
+      # TODO
     end
 
     def translate(text, from: base_language, to: base_language)
@@ -39,14 +39,14 @@ module TranslatorInMissing
     end
 
     def translation_chain(text, iterations: 10, alternate_base: false)
-      # chain_jlanguages = languages # use this instead of the next line for deterministic experimentation
-      chain_jlanguages = languages.delete_if do |language|
+      # chain_languages = languages # use this instead of the next 3 lines for deterministic experimentation
+      chain_languages = languages.delete_if do |language|
         language.code == base_language.code
       end.sample(iterations)
       path = [[base_language.name, text]]
 
       current = base_language
-      chain_jlanguages.each do |language|
+      chain_languages.each do |language|
         next if language.code == base_language.code
         if alternate_base && current.code != base_language.code
           text = translate(text, from: current)
