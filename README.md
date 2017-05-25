@@ -2,11 +2,11 @@
 ### Fun with Google Translate.
 This project doesn't really have any purpose, other than to create nonsensical phrases from recognizable quotes. For funsies.
 
-Eventually, I hope to automate it and connect it to the newly minted @translate_lost Twitter account. Then you can tweet a message @translate_lost and it will respond with some nonsense and the specific chain of languages that produced said nonsense.
+The Ruby program is written and currently I'm working on automating the process and connecting it to the newly minted @translate_lost Twitter account. Then you will be able to tweet a message @translate_lost and it will respond with some nonsense and the specific chain of languages that produced said nonsense.
 
 Fun, right? I know.
 
-For now, it's just a Ruby module. It can be played with in an interactive Ruby terminal. I like `pry`.
+At the moment it's just a Ruby module. It can be played with in an interactive Ruby terminal. I like `pry`.
 
 ## Usage
 ### Getting started with Google Translate
@@ -15,7 +15,7 @@ For now, to use this you need your own Google Translate API key. Here's how to g
 * Click the "Create Project" button. Twice apparently.
 * Name your new project whatever. (Not literally "whatever", but just whatever you'd like to call it.)
 * Click the "Enable" link next to the "Google Translate API" heading.
-  * This will require you to put in billing info, but it's free for 2 months, I promise. After that, I'm not sure what happens. I'll let you know in mid-January when I find out.
+  * This will require you to put in billing info, but it's free for 2 months, I promise.
 * Click on the "Credentials" tab on the left.
 * Click the "Create Credentials" button and select "API key" from the dropdown list.
 * Copy the generated API key.
@@ -46,6 +46,7 @@ or
 [3] pry(main)> translator = TranslatorMissingIn::Translator.new
 ```
 By default, English is the base language (the language that the names of other languages are given in, and the expected input and output of language chains). This can be changed by instantiating the translator using the `base_lang_code` keyword arg and [an ISO-639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+
 ### Examples
 * For a **simple translation**, the `TranslatorMissingIn::Translator#translate` method takes a required `text` argument, and `to` and `from` keyword arguments. `to` and `from` both accept ISO-639-1 language codes or `Google::Cloud::Translate::Language` objects, and if either `to` or `from` is omitted, the base language is used by default. So only one is required, but both may be specified.
 ```rb
